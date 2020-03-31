@@ -1,3 +1,4 @@
+
 //**********************************
 //*****  INCLUDES  *****************
 //**********************************
@@ -20,7 +21,19 @@ String softwareVersion = "2.3";
  *  interface.  The get_key may be used in other 
  *  procedures
  */
- 
+
+ //*** lcd Variables ***
+typedef struct
+{
+  String Row0;
+  String Row1;
+  String Row2;
+  String Row3;
+} lcdDef;
+lcdDef lcd = {"row0","row1","row2","row3"};
+
+int keyCount = 0;
+String sKey = "";
 //Setup Keypad in Uno
 const byte ROWS = 4; // Four rows
 const byte COLS = 4; // Four columns
@@ -72,18 +85,7 @@ void testKeyPad()
 //***  LCD Library  ***
 LiquidCrystal_PCF8574 lcdControl(0x27);  // set the LCD address to 0x3F for a 20 chars and 4 line display
 
-//*** lcd Variables ***
-typedef struct
-{
-  String Row0;
-  String Row1;
-  String Row2;
-  String Row3;
-} lcdDef;
-lcdDef lcd = {"row0","row1","row2","row3"};
 
-int keyCount = 0;
-String sKey = "";
 
 
 //***  LCD Control Procedures ***
@@ -203,9 +205,9 @@ typedef struct
 buttonDef button[numButtons] =
 {
   {0,0,0,10},
-  {0,0,0,11}
+  {0,0,0,11},
 };
-debounceTrigger = 5
+int debounceCountMax= 5;
 
 int CheckButtonEvent ()
 /*  This FUNCTION returns the hit button with a RISING Edge
@@ -216,10 +218,10 @@ int CheckButtonEvent ()
   for(int i = 0; i < numButtons; i++)
   {
     int thsButton = digitalRead( button[i].Input);
-    if (thsButton != buttons[i].State)
+    if (thsButton != button[i].State)
     {
       button[i].DebounceCount += 1;
-      if ( button[i].DebounceCount => debounceTrigger )
+      if ( button[i].DebounceCount >= debounceCountMax )
       {
         button[i].State = thsButton ; button[i].DebounceCount = 0;
         if(thsButton == btn_ON) {eventNum = i; break;};    
@@ -383,3 +385,4 @@ void loop()
   int btnEvent = CheckButtonEvent();
   if (btnEvent != 99) {ledHandling(btnEvent,led_Toogle);}  
 }
+
